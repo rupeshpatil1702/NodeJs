@@ -5,33 +5,34 @@ const products = data.products;
 
 const express = require("express");
 const morgan = require('morgan');
+const exp = require("constants");
 const server = express();
 
-//Middleware
-server.use(express.json()) // bodyParser
-// server.use(express.urlencoded()) // used when we sends data from form
-
+//bodyParser
+server.use(express.json());
 server.use(morgan('default'))
-server.use(express.static('public'));
-// server.use((req,res,next) => {
-//     console.log(req.method, req.ip, req.hostname, new Date(),req.get("User-Agent"));
-//     next()
-// })
-const auth = (req, res, next) => {
-  console.log(req.body);
-  if (req.body.password == "123") {
-    next();
-  } else {
-    res.sendStatus(401);
-  }
-};
+server.use(express.static('public'))
+
 
 // API - Endpoint = Route
-server.get("/", auth, (req, res) => {
-   res.json({ type: "GET" });
+//Products
+//Read GET/products
+server.get("/products", (req, res) => {
+   res.json(products);
 });
-server.post("/", auth, (req, res) => {
-  res.json({ type: "POST" });
+
+//Read GET/products/:id
+server.get("/products/:id", (req, res) => {
+    const id = +req.params.id;
+    const product = products.find(p=>p.id===id)
+  res.json(product);
+});
+
+//Create POST/products
+server.post("/products", (req, res) => {
+    console.log(req.body)
+    products.push(req.body)
+  res.json(req.body);
 });
 server.put("/", (req, res) => {
   res.json({ type: "PUT" });
